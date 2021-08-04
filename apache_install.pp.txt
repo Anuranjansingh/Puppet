@@ -1,0 +1,70 @@
+#Install Apache package
+class apache {
+package {'httpd_daemon':
+  name   => httpd,
+  ensure => installed,
+} 
+
+ $httpd_conf = '<IfModule prefork.c>
+               StartServers        4
+               MinSpareServers     20
+               MaxSpareServers     40
+               MaxClients          200
+               MaxRequestsPerChild 4500
+               </IfModule>'
+file { '/etc/httpd/conf/httpd.conf':
+  ensure  => present,
+  content => $httpd_conf,
+}
+
+$vhost_conf = '<VirtualHost *:80>
+             ServerAdmin admin@example.org
+             ServerName example.org
+             ServerAlias www.example.org
+             DocumentRoot /srv/www/example.org/public_html/
+             ErrorLog /srv/www/example.org/logs/error.log
+             CustomLog /srv/www/example.org/logs/access.log combined
+        </VirtualHost>'
+
+file {'/etc/httpd/conf.d/vhost.conf':
+  ensure  => present,
+  content => $vhost_conf,
+}
+
+file {'/srv/www/example.org/public_html':
+  ensure  => directory,
+  recurse => true,
+}
+
+file {'/srv/www/example.org/logs':
+  ensure  => directory,
+  recurse => true,
+}
+
+service {'httpd':
+  ensure => running,
+  enable => true,
+}
+
+file {'/etc/httpd/modules/':
+  ensure  => directory,
+  recurse => true,
+}
+
+class mod_perl{
+package {'hmod_perl':
+  name   => mod_perl
+  ensure => installed,
+} 
+
+class mod_wsgi{
+package {'mod_wsgi':
+  name   => mod_wsgi
+  ensure => installed,
+} 
+
+class php-pear{
+package {'php-pear':
+  name   => php-pear
+  ensure => installed,
+} 
