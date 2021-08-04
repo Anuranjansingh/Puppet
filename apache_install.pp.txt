@@ -46,6 +46,7 @@ service {'httpd':
   enable => true,
 }
 
+#################################################################
 file {'/etc/httpd/modules/':
   ensure  => directory,
   recurse => true,
@@ -68,3 +69,10 @@ package {'php-pear':
   name   => php-pear
   ensure => installed,
 } 
+###########################################################################
+['mod_perl', 'mod_wsgi', 'mod_php', 'mod_php-pear'].each |String $mod_package| {
+  package{"Install package ${mod_package}":
+    name   => $mod_package,
+    ensure => installed,
+  }
+}
